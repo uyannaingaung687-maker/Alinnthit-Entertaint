@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>လျှပ်စစ်နှင့် စက်အပိုပစ္စည်း စင်တာ App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Padauk & Noto Sans Myanmar for crisp Burmese typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans Myanmar"', 'sans-serif'],
+                    },
+                    colors: {
+                        royalBlue: {
+                            950: '#06152D',
+                            900: '#0A2540',
+                            800: '#103466',
+                            700: '#1D4ED8',
+                            600: '#2563EB',
+                        },
+                        warmYellow: {
+                            100: '#FEF9C3',
+                            200: '#FEF08A',
+                            300: '#FDE047',
+                            400: '#FACC15',
+                        },
+                        richGold: {
+                            300: '#FCD34D',
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                            700: '#B45309',
+                            800: '#92400E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Noto Sans Myanmar', sans-serif;
+            background: radial-gradient(circle at top, #172554 0%, #020617 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Mobile App Shell */
+        .app-shell {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            max-height: 880px;
+            background: linear-gradient(165deg, #0B2A59 0%, #16428A 45%, #091E42 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(251, 191, 36, 0.25);
+        }
+
+        @media (min-width: 640px) {
+            .app-shell {
+                height: 92vh;
+                border-radius: 36px;
+                border: 4px solid #1E3A8A;
+            }
+        }
+
+        /* Yellow Base with Metallic Gold Accent Card */
+        .yellow-gold-card {
+            background: linear-gradient(145deg, #FEF9C3 0%, #FEF08A 55%, #FDE047 100%);
+            border: 2.5px solid #D97706;
+            box-shadow: 
+                0 10px 20px -5px rgba(0, 0, 0, 0.35),
+                inset 0 2px 4px rgba(255, 255, 255, 0.9),
+                inset 0 -3px 6px rgba(180, 83, 9, 0.25);
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .yellow-gold-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.45) 50%,
+                transparent 60%
+            );
+            transform: rotate(25deg);
+            pointer-events: none;
+        }
+
+        .yellow-gold-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .gold-badge-icon {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #92400E 100%);
+            border: 2px solid #FEF3C7;
+            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.45);
+        }
+
+        .gold-gradient-btn {
+            background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+            border: 1px solid #FEF08A;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+        }
+
+        .gold-gradient-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* TikTok Vertical Snap Feed */
+        .video-feed-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100%;
+        }
+        .video-slide {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Subtle Pulse Animation */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+        }
+        .pulse-gold {
+            animation: pulseGlow 2.2s infinite;
+        }
+
+        /* Prominent Shop Title Styling */
+        .shop-brand-title {
+            font-size: 1.85rem; /* ~30px */
+            line-height: 1.2;
+            font-weight: 800;
+            background: linear-gradient(180deg, #FFFFFF 15%, #FDE047 65%, #F59E0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.5));
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile App Shell -->
+    <div class="app-shell text-white" id="appShell">
+
+        <!-- Toast Notification Box (Replaces alert) -->
+        <div id="toastBox" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden transition-all duration-300 w-[90%] max-w-[380px]">
+            <div class="bg-amber-400 text-slate-950 font-semibold text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-2xl border-2 border-amber-700 flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-check text-amber-800 text-base"></i>
+                <span id="toastMessage">လုပ်ဆောင်မှု အောင်မြင်ပါသည်။</span>
+            </div>
+        </div>
+
+        <!-- Top Status & App Header -->
+        <header id="mainHeader" class="px-5 pt-4 pb-3 bg-gradient-to-b from-[#061633] to-transparent z-20 shrink-0">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-2xl shrink-0">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h1 class="shop-brand-title tracking-wide">
+                            အလင်းသစ်
+                        </h1>
+                        <p class="text-[11px] text-amber-200/90 font-medium leading-snug mt-0.5">
+                            အိမ်သုံးလျှပ်စစ်ပစ္စည်း နှင့် မြက်ရိတ်စက်၊ ဆေးဖြန်းပုံးအပိုပစ္စည်းအမျိုးမျိုး
+                        </p>
+                    </div>
+                </div>
+                <button onclick="switchScreen('home')" id="homeTopBtn" class="hidden bg-blue-800/80 hover:bg-blue-700 border border-amber-400/50 text-amber-300 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shrink-0">
+                    <i class="fa-solid fa-house"></i> ပင်မ
+                </button>
+            </div>
+        </header>
+
+        <!-- ==================== SCREEN 0: HOME DASHBOARD (4 YELLOW-GOLD FEATURES) ==================== -->
+        <main id="screen-home" class="flex-1 overflow-y-auto no-scrollbar px-5 pb-24 flex flex-col justify-between">
+            <!-- Promo / Quick Banner -->
+            <div class="mt-1 mb-4 p-3.5 rounded-2xl bg-blue-950/70 border border-amber-400/40 backdrop-blur-sm flex items-center justify-between shadow-lg">
+                <div class="pr-2">
+                    <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400 text-blue-950 mb-1">
+                        ဇရပ်ကြီး၊ စျေးလမ်း
+                    </span>
+                    <p class="text-xs text-blue-100 leading-relaxed">
+                        အိမ်သုံးလျှပ်စစ်၊ မြက်ရိတ်စက်နှင့် ဆေးဖြန်းပုံး အပိုပစ္စည်းအမျိုးမျိုး
+                    </p>
+                </div>
+                <div class="text-2xl text-amber-400 shrink-0">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+            </div>
+
+            <!-- 2x2 Grid of 4 Yellow-Background & Gold-Accented Cards -->
+            <div class="grid grid-cols-2 gap-3.5 my-auto">
+                
+                <!-- Feature 1: Entertainment / Short Videos -->
+                <button onclick="switchScreen('videos')" class="yellow-gold-card rounded-3xl p-4 text-left flex flex-col justify-between min-h-[172px]">
+                    <div class="flex items-start justify-between w-full">
+                        <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-xl">
+                            <i class="fa-solid fa-clapperboard"></i>
+                        </div>
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-600/20 text-amber-900 border border-amber-600/40">
+                            ဗီဒီယိုတို
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <h2 class="text-[15px] font-extrabold text-amber-950 leading-snug">
+                            ဖျော်ဖြေရေးနှင့် ဗီဒီယိုများ
+                        </h2>
+                        <p class="text-[11px] font-medium text-amber-800 mt-1 leading-tight">
+                            ပစ္စည်းစမ်းသပ်ပြသမှုနှင့် ဗီဒီယိုများ ကြည့်ရန်
+                        </p>
+                    </div>
+                    <div class="mt-2 flex items-center text-[11px] font-bold text-amber-700">
+                        <span>ကြည့်ရှုမည်</span>
+                        <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                    </div>
+                </button>
+
+                <!-- Feature 2: Products & Prices -->
+                <button onclick="switchScreen('products')" class="yellow-gold-card rounded-3xl p-4 text-left flex flex-col justify-between min-h-[172px]">
+                    <div class="flex items-start justify-between w-full">
+                        <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-xl">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-600/20 text-amber-900 border border-amber-600/40">
+                            ဈေးနှုန်းစုံ
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <h2 class="text-[15px] font-extrabold text-amber-950 leading-snug">
+                            ပစ္စည်းနှင့် ဈေးနှုန်းများ
+                        </h2>
+                        <p class="text-[11px] font-medium text-amber-800 mt-1 leading-tight">
+                            လျှပ်စစ်၊ မြက်ရိတ်စက်နှင့် ဆေးဖြန်းပုံး အပိုပစ္စည်းများ
+                        </p>
+                    </div>
+                    <div class="mt-2 flex items-center text-[11px] font-bold text-amber-700">
+                        <span>ဈေးနှုန်းကြည့်မည်</span>
+                        <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                    </div>
+                </button>
+
+                <!-- Feature 3: Screenshot Order & Chat -->
+                <button onclick="switchScreen('chat')" class="yellow-gold-card rounded-3xl p-4 text-left flex flex-col justify-between min-h-[172px] pulse-gold">
+                    <div class="flex items-start justify-between w-full">
+                        <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-xl">
+                            <i class="fa-solid fa-camera-retro"></i>
+                        </div>
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-700 text-amber-100">
+                            အမြန်မှာရန်
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <h2 class="text-[15px] font-extrabold text-amber-950 leading-snug">
+                            Screenshot Order & Chat
+                        </h2>
+                        <p class="text-[11px] font-medium text-amber-800 mt-1 leading-tight">
+                            ပုံပို့ပြီး အော်ဒါတင်ရန်နှင့် ဆိုင်နှင့် စကားပြောရန်
+                        </p>
+                    </div>
+                    <div class="mt-2 flex items-center text-[11px] font-bold text-amber-700">
+                        <span>Order တင်မည်</span>
+                        <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                    </div>
+                </button>
+
+                <!-- Feature 4: Shop Address & Services -->
+                <button onclick="switchScreen('info')" class="yellow-gold-card rounded-3xl p-4 text-left flex flex-col justify-between min-h-[172px]">
+                    <div class="flex items-start justify-between w-full">
+                        <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-xl">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-600/20 text-amber-900 border border-amber-600/40">
+                            ဆက်သွယ်ရန်
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <h2 class="text-[15px] font-extrabold text-amber-950 leading-snug">
+                            ဆိုင်လိပ်စာနှင့် ငွေပေးချေရန်
+                        </h2>
+                        <p class="text-[11px] font-medium text-amber-800 mt-1 leading-tight">
+                            လိပ်စာ၊ KPay / WavePay နှင့် အော်ဒါစစ်ဆေးရန်
+                        </p>
+                    </div>
+                    <div class="mt-2 flex items-center text-[11px] font-bold text-amber-700">
+                        <span>အသေးစိတ်ကြည့်ရန်</span>
+                        <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                    </div>
+                </button>
+
+            </div>
+
+            <!-- Bottom Quick Help Note -->
+            <div class="mt-4 text-center">
+                <p class="text-[11px] text-blue-200/80">
+                    <i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i>
+                    အလင်းသစ် လျှပ်စစ်နှင့် စက်အပိုပစ္စည်းဆိုင် (ဇရပ်ကြီး)
+                </p>
+            </div>
+        </main>
+
+        <!-- ==================== SCREEN 1: TIKTOK STYLE SHORT VIDEOS ==================== -->
+        <section id="screen-videos" class="hidden flex-1 relative overflow-hidden bg-slate-950 pb-16">
+            <div class="video-feed-container no-scrollbar" id="videoFeed">
+                <!-- Video slides injected by JS -->
+            </div>
+            <!-- Scroll Hint -->
+            <div class="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-black/50 backdrop-blur-md text-amber-300 text-[11px] px-3 py-1 rounded-full border border-amber-400/30 pointer-events-none">
+                <i class="fa-solid fa-arrows-up-down mr-1"></i> အပေါ်အောက် ပွတ်ဆွဲကြည့်ပါ
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 2: PRODUCTS & PRICES CATALOG ==================== -->
+        <section id="screen-products" class="hidden flex-1 flex flex-col overflow-hidden px-4 pb-20">
+            <!-- Search Bar -->
+            <div class="relative mb-3">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 text-sm"></i>
+                <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="ပစ္စည်းအမည်၊ ဝပ်အား (ဥပမာ- အင်ဗာတာ၊ မြက်ရိတ်စက်)..." 
+                    class="w-full bg-blue-950/90 border border-amber-400/50 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-blue-300 focus:outline-none focus:border-amber-300">
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2.5 shrink-0" id="categoryTabs">
+                <button onclick="setCategory('all', this)" class="cat-pill active px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-400 text-blue-950 shrink-0 shadow">
+                    အားလုံး
+                </button>
+                <button onclick="setCategory('home', this)" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-900/80 text-blue-100 border border-blue-700 shrink-0">
+                    အိမ်သုံးလျှပ်စစ်
+                </button>
+                <button onclick="setCategory('inverter', this)" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-900/80 text-blue-100 border border-blue-700 shrink-0">
+                    အင်ဗာတာ/ဘက်ထရီ
+                </button>
+                <button onclick="setCategory('parts', this)" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-900/80 text-blue-100 border border-blue-700 shrink-0">
+                    စက်အပိုပစ္စည်း
+                </button>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="productGrid" class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-2 gap-3 pt-1 pb-4">
+                <!-- Product cards injected by JS -->
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 3: SCREENSHOT ORDER & CHAT ==================== -->
+        <section id="screen-chat" class="hidden flex-1 flex flex-col overflow-hidden pb-16">
+            <!-- Chat Top Info Bar -->
+            <div class="mx-4 mb-2 px-3.5 py-2 rounded-2xl bg-amber-300/95 text-amber-950 border border-amber-600 flex items-center justify-between shrink-0 shadow">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-600 animate-ping"></span>
+                    <span class="text-xs font-extrabold">အလင်းသစ် ဆိုင်ရှင်နှင့် စကားပြောခန်း</span>
+                </div>
+                <span class="text-[10px] font-bold bg-amber-950 text-amber-300 px-2 py-0.5 rounded-full">Online</span>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto no-scrollbar px-4 py-2 space-y-3">
+                <!-- Initial Welcome Message from Shop -->
+                <div class="flex items-start gap-2 max-w-[85%]">
+                    <div class="w-8 h-8 rounded-full gold-badge-icon flex items-center justify-center text-white text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="bg-blue-900/90 border border-amber-400/40 rounded-2xl rounded-tl-none p-3 text-xs text-blue-50 shadow">
+                        <p class="font-bold text-amber-300 mb-1">အလင်းသစ် (ဇရပ်ကြီး)</p>
+                        <p class="leading-relaxed">မင်္ဂလာပါခင်ဗျာ 🙏 အိမ်သုံးလျှပ်စစ်ပစ္စည်း၊ မြက်ရိတ်စက်နှင့် ဆေးဖြန်းပုံး အပိုပစ္စည်းများ လိုအပ်ပါက Screenshot ပို့၍ မေးမြန်းအော်ဒါတင်နိုင်ပါတယ်ခင်ဗျာ။</p>
+                        <span class="text-[10px] text-blue-300 block mt-1">ယခုလေးတင်</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attachment Preview Bar (When user selects a screenshot/image) -->
+            <div id="attachmentPreviewBar" class="hidden mx-4 mb-2 p-2.5 rounded-2xl bg-amber-200 text-amber-950 border-2 border-amber-600 flex items-center justify-between shadow-lg">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                    <div id="previewThumb" class="w-11 h-11 rounded-xl bg-blue-900 text-amber-300 flex items-center justify-center text-lg shrink-0 overflow-hidden border border-amber-600">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <div class="truncate">
+                        <span class="text-[10px] font-bold uppercase text-amber-800 block">ပို့မည့် Screenshot / ပစ္စည်းပုံ</span>
+                        <p id="previewItemTitle" class="text-xs font-extrabold truncate">500W Pure Sine Wave Inverter</p>
+                    </div>
+                </div>
+                <button onclick="clearAttachment()" class="w-7 h-7 rounded-full bg-amber-800 text-white flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Chat Input & Screenshot Upload Bar -->
+            <div class="px-3 pt-2 pb-3 bg-[#061633] border-t border-amber-400/30 shrink-0">
+                <!-- Quick Action Chips -->
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar mb-2">
+                    <button onclick="sendQuickPrompt('ဒီပစ္စည်း လက်ကျန်ရှိပါသလားဗျ?')" class="text-[11px] bg-blue-900/90 border border-amber-400/40 text-amber-200 px-2.5 py-1 rounded-full shrink-0">
+                        လက်ကျန်ရှိလား?
+                    </button>
+                    <button onclick="sendQuickPrompt('အိမ်အရောက် ပို့ခ ဘယ်လောက်ကျမလဲဗျ?')" class="text-[11px] bg-blue-900/90 border border-amber-400/40 text-amber-200 px-2.5 py-1 rounded-full shrink-0">
+                        ပို့ခဘယ်လောက်လဲ?
+                    </button>
+                    <button onclick="triggerDeviceScreenshot()" class="text-[11px] bg-amber-400 text-blue-950 font-bold px-2.5 py-1 rounded-full shrink-0">
+                        <i class="fa-solid fa-upload mr-1"></i> ဖုန်းထဲမှ ပုံရွေးမည်
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Hidden Real File Input for Device Screenshots -->
+                    <input type="file" id="screenshotFileInput" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                    
+                    <button onclick="triggerDeviceScreenshot()" title="Screenshot ပုံတင်ရန်" class="w-10 h-10 rounded-2xl bg-amber-300 text-amber-950 border border-amber-600 flex items-center justify-center text-base shrink-0 shadow">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                    
+                    <input type="text" id="chatInput" onkeypress="if(event.key==='Enter') sendChatMessage()" placeholder="စာရိုက်ပါ သို့မဟုတ် လိပ်စာထည့်ပါ..." 
+                        class="flex-1 bg-blue-950 border border-amber-400/40 rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder-blue-300 focus:outline-none focus:border-amber-300">
+                    
+                    <button onclick="sendChatMessage()" class="w-10 h-10 rounded-2xl gold-gradient-btn text-blue-950 font-bold flex items-center justify-center text-sm shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 4: SHOP INFO & SERVICES ==================== -->
+        <section id="screen-info" class="hidden flex-1 overflow-y-auto no-scrollbar px-5 pb-24 space-y-4">
+            <!-- Shop Card -->
+            <div class="yellow-gold-card rounded-3xl p-4 text-amber-950">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-2xl gold-badge-icon flex items-center justify-center text-white text-xl shrink-0">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-amber-950 leading-tight">အလင်းသစ်</h2>
+                        <p class="text-xs font-semibold text-amber-800 mt-0.5">အိမ်သုံးလျှပ်စစ်ပစ္စည်း နှင့် မြက်ရိတ်စက်၊ ဆေးဖြန်းပုံးအပိုပစ္စည်းအမျိုးမျိုး</p>
+                    </div>
+                </div>
+                <div class="space-y-2 text-xs font-medium bg-amber-100/80 p-3 rounded-2xl border border-amber-500/40">
+                    <p><i class="fa-solid fa-location-dot text-amber-700 w-5"></i> စျေးလမ်း၊ ဇရပ်ကြီး။</p>
+                    <p><i class="fa-solid fa-phone text-amber-700 w-5"></i> ၀၉-၂၅၄၂၉၂၆၈၇</p>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <a href="tel:09254292687" class="py-2.5 rounded-xl bg-blue-900 text-amber-300 font-bold text-xs text-center shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-phone-volume"></i> ဖုန်းခေါ်ဆိုမည်
+                    </a>
+                    <button onclick="switchScreen('chat')" class="py-2.5 rounded-xl bg-amber-800 text-amber-100 font-bold text-xs text-center shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-comment-dots"></i> စာပို့မေးမည်
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Accounts -->
+            <div class="bg-blue-950/80 border border-amber-400/40 rounded-3xl p-4 space-y-3">
+                <h3 class="text-sm font-bold text-amber-300 flex items-center gap-2">
+                    <i class="fa-solid fa-wallet"></i> ငွေပေးချေနိုင်သော အကောင့်များ (KBZPay / WavePay)
+                </h3>
+                
+                <div class="p-3 rounded-2xl bg-blue-900/70 border border-blue-700 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500 text-white">KBZPay / WavePay</span>
+                        <p class="text-sm font-bold text-white mt-1">09 254292687</p>
+                        <p class="text-[11px] text-blue-200">အမည် - ဦးရန်နိုင်အောင် (U Yan Naing Aung)</p>
+                    </div>
+                    <button onclick="copyAccount('09254292687', 'ဦးရန်နိုင်အောင် အကောင့်')" class="px-3 py-2 rounded-xl bg-amber-400 text-blue-950 font-bold text-xs">
+                        <i class="fa-regular fa-copy mr-1"></i> ကူးယူမည်
+                    </button>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-blue-900/70 border border-blue-700 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-yellow-400 text-slate-950">KBZPay / WavePay</span>
+                        <p class="text-sm font-bold text-white mt-1">09 254292687</p>
+                        <p class="text-[11px] text-blue-200">အမည် - မပြည့်ဖြိုးခိုင် (Ma Pyae Phyo Khaing)</p>
+                    </div>
+                    <button onclick="copyAccount('09254292687', 'မပြည့်ဖြိုးခိုင် အਕောင့်')" class="px-3 py-2 rounded-xl bg-amber-400 text-blue-950 font-bold text-xs">
+                        <i class="fa-regular fa-copy mr-1"></i> ကူးယူမည်
+                    </button>
+                </div>
+            </div>
+
+            <!-- Simple Order Tracking -->
+            <div class="bg-blue-950/80 border border-amber-400/40 rounded-3xl p-4">
+                <h3 class="text-sm font-bold text-amber-300 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-truck-fast"></i> အော်ဒါ အခြေအနေ စစ်ဆေးရန်
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="orderTrackInput" placeholder="ဖုန်းနံပါတ် သို့မဟုတ် Order ID ရိုက်ပါ..." class="flex-1 bg-blue-900 border border-blue-700 rounded-xl px-3 py-2 text-xs text-white placeholder-blue-300 focus:outline-none">
+                    <button onclick="checkOrderStatus()" class="px-4 py-2 rounded-xl gold-gradient-btn text-blue-950 font-bold text-xs">
+                        စစ်မည်
+                    </button>
+                </div>
+                <div id="orderTrackResult" class="hidden mt-3 p-3 rounded-2xl bg-amber-200 text-amber-950 text-xs font-semibold border border-amber-600">
+                    <!-- Dynamic status result -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-[#051229]/95 backdrop-blur-md border-t border-amber-400/30 px-2 py-1.5 flex justify-around items-center z-30">
+            <button onclick="switchScreen('home')" id="nav-home" class="nav-btn active flex flex-col items-center py-1 px-2 text-amber-400">
+                <i class="fa-solid fa-house text-base"></i>
+                <span class="text-[10px] font-bold mt-0.5">ပင်မ</span>
+            </button>
+            <button onclick="switchScreen('videos')" id="nav-videos" class="nav-btn flex flex-col items-center py-1 px-2 text-blue-300">
+                <i class="fa-solid fa-clapperboard text-base"></i>
+                <span class="text-[10px] font-medium mt-0.5">ဗီဒီယို</span>
+            </button>
+            <button onclick="switchScreen('products')" id="nav-products" class="nav-btn flex flex-col items-center py-1 px-2 text-blue-300">
+                <i class="fa-solid fa-boxes-stacked text-base"></i>
+                <span class="text-[10px] font-medium mt-0.5">ပစ္စည်းများ</span>
+            </button>
+            <button onclick="switchScreen('chat')" id="nav-chat" class="nav-btn flex flex-col items-center py-1 px-2 text-blue-300 relative">
+                <i class="fa-solid fa-camera-retro text-base"></i>
+                <span class="text-[10px] font-medium mt-0.5">Order/Chat</span>
+                <span id="chatBadge" class="hidden absolute top-0.5 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
+            </button>
+            <button onclick="switchScreen('info')" id="nav-info" class="nav-btn flex flex-col items-center py-1 px-2 text-blue-300">
+                <i class="fa-solid fa-store text-base"></i>
+                <span class="text-[10px] font-medium mt-0.5">ဆိုင်လိပ်စာ</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <script>
+        // ==================== SAMPLE DATA ====================
+        const videosData = [
+            {
+                id: 'v1',
+                title: 'မြက်ရိတ်စက် ကာဗျူရေတာနှင့် ပလပ် အပိုပစ္စည်း အစုံရောက်ပါပြီ 🛠️',
+                desc: 'အလင်းသစ်ဆိုင်မှ ဇရပ်ကြီးဒေသတွင်းအတွက် မြက်ရိတ်စက် အပိုပစ္စည်းအမျိုးမျိုး မှာယူနိုင်ပါပြီ။',
+                tag: '#မြက်ရိတ်စက် #စက်အပိုပစ္စည်း',
+                likes: '1.2K',
+                comments: '84',
+                bgGradient: 'from-blue-900 via-indigo-950 to-slate-950',
+                icon: 'fa-gears',
+                linkedProduct: {
+                    name: 'မြက်ရိတ်စက် ကာဗျူရေတာ (GX35 / 411)',
+                    price: '၂၂,၀၀၀ ကျပ်'
+                }
+            },
+            {
+                id: 'v2',
+                title: 'ဘက်ထရီဆေးဖြန်းပုံး မော်တာနှင့် ပစ္စည်းအမျိုးမျိုး 🌿',
+                desc: 'ဆေးဖြန်းပုံး အပိုပစ္စည်းများနှင့် မော်တာအမျိုးမျိုး လက်ကျန်ရှိပါသည်။',
+                tag: '#ဆေးဖြန်းပုံး #အပိုပစ္စည်း',
+                likes: '890',
+                comments: '42',
+                bgGradient: 'from-amber-900 via-blue-950 to-slate-950',
+                icon: 'fa-fan',
+                linkedProduct: {
+                    name: 'ဘက်ထရီ ဆေးဖြန်းပုံး မော်တာ (12V)',
+                    price: '၂၈,၅၀၀ ကျပ်'
+                }
+            },
+            {
+                id: 'v3',
+                title: 'အိမ်သုံးလျှပ်စစ်ပစ္စည်းနှင့် အားသွင်းမီးချောင်းများ 💡',
+                desc: 'အရည်အသွေးကောင်းမွန်သော အိမ်သုံးလျှပ်စစ်ပစ္စည်းများကို ဈေးနှုန်းချိုသာစွာ ဝယ်ယူနိုင်ပါသည်။',
+                tag: '#အိမ်သုံးလျှပ်စစ် #LEDမီး',
+                likes: '2.4K',
+                comments: '156',
+                bgGradient: 'from-sky-900 via-blue-950 to-slate-950',
+                icon: 'fa-lightbulb',
+                linkedProduct: {
+                    name: 'အားသွင်း LED မီးချောင်း (60W ရှည်)',
+                    price: '၁၄,၅၀၀ ကျပ်'
+                }
+            }
+        ];
+
+        const productsData = [
+            {
+                id: 'p1',
+                name: 'မြက်ရိတ်စက် ကာဗျူရေတာ (GX35)',
+                specs: 'အရည်အသွေးမီ • အပိုပစ္စည်း',
+                price: '၂၂,၀၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-gears'
+            },
+            {
+                id: 'p2',
+                name: 'ဘက်ထရီ ဆေးဖြန်းပုံး မော်တာ (12V)',
+                specs: 'ဖိအားပြင်း Double Pump မော်တာ',
+                price: '၂၈,၅၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-fan'
+            },
+            {
+                id: 'p3',
+                name: 'ဆေးဖြန်းပုံး လက်ကိုင်ကတုတ်နှင့် ဘုသီးအစုံ',
+                specs: 'စတီးတံပါ • အပိုပစ္စည်း',
+                price: '၈,၅၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-shower'
+            },
+            {
+                id: 'p4',
+                name: 'အားသွင်း LED မီးချောင်း (60W)',
+                specs: '၈ နာရီခံ • အိမ်သုံးလျှပ်စစ်',
+                price: '၁၄,၅၀၀ ကျပ်',
+                category: 'home',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-lightbulb'
+            },
+            {
+                id: 'p5',
+                name: 'အိမ်သုံး ခလုတ်ခုံနှင့် ဝါယာကြိုးခွေ',
+                specs: 'စံချိန်မီ ကြေးနန်းဝါယာ',
+                price: '၁၂,၀၀၀ ကျပ်',
+                category: 'home',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-plug'
+            },
+            {
+                id: 'p6',
+                name: 'မြက်ရိတ်စက် ဓားသွား (3T / 40T)',
+                specs: 'စတီးမန်း ခိုင်ခံ့ပစ္စည်း',
+                price: '၉,၅၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-shield-halved'
+            }
+        ];
+
+        const productsData = [
+            {
+                id: 'p1',
+                name: '1000W Pure Sine Wave Inverter',
+                specs: '12V DC to 220V AC • အာမခံ ၆ လ',
+                price: '၁၈၅,၀၀၀ ကျပ်',
+                category: 'inverter',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-bolt'
+            },
+            {
+                id: 'p2',
+                name: '12V 100Ah Lithium Battery',
+                specs: 'LiFePO4 • သက်တမ်းရှည် ဘက်ထရီ',
+                price: '၄၂၀,၀၀၀ ကျပ်',
+                category: 'inverter',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-car-battery'
+            },
+            {
+                id: 'p3',
+                name: 'မြက်ရိတ်စက် ကာဗျူရေတာ (GX35)',
+                specs: 'ဂျပန်စံချိန်မီ • အပိုပစ္စည်း',
+                price: '၂၂,၀၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-gears'
+            },
+            {
+                id: 'p4',
+                name: 'ဘက်ထရီ ဆေးဖြန်းပုံး မော်တာ (12V)',
+                specs: 'ဖိအားပြင်း Double Pump မော်တာ',
+                price: '၂၈,၅၀၀ ကျပ်',
+                category: 'parts',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-fan'
+            },
+            {
+                id: 'p5',
+                name: 'အားသွင်း LED မီးချောင်း (60W)',
+                specs: '၈ နာရီခံ • နံရံကပ်/ချိတ်ဆွဲနိုင်',
+                price: '၁၄,၅၀၀ ကျပ်',
+                category: 'home',
+                stock: 'လက်ကျန်ရှိ',
+                icon: 'fa-lightbulb'
+            },
+            {
+                id: 'p6',
+                name: 'မီးအားမြှင့်စက် Servo 2000VA',
+                specs: 'ကြေးနန်းစစ် • အိမ်သုံးအထူး',
+                price: '၁၄၅,၀၀၀ ကျပ်',
+                category: 'home',
+                stock: 'လက်ကျန်နည်း',
+                icon: 'fa-plug-circle-check'
+            }
+        ];
+
+        let currentCategory = 'all';
+        let pendingAttachment = null;
+
+        // ==================== INITIALIZATION ====================
+        window.onload = function() {
+            renderVideos();
+            renderProducts(productsData);
+        };
+
+        // ==================== NAVIGATION LOGIC ====================
+        function switchScreen(screenName) {
+            const screens = ['home', 'videos', 'products', 'chat', 'info'];
+            screens.forEach(s => {
+                document.getElementById(`screen-${s}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${s}`);
+                if (navBtn) {
+                    navBtn.classList.remove('text-amber-400', 'font-bold');
+                    navBtn.classList.add('text-blue-300');
+                }
+            });
+
+            document.getElementById(`screen-${screenName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${screenName}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-blue-300');
+                activeNav.classList.add('text-amber-400', 'font-bold');
+            }
+
+            // Show/Hide top Home button
+            const homeTopBtn = document.getElementById('homeTopBtn');
+            if (screenName === 'home') {
+                homeTopBtn.classList.add('hidden');
+            } else {
+                homeTopBtn.classList.remove('hidden');
+            }
+        }
+
+        // ==================== TOAST HELPER ====================
+        function showToast(msg) {
+            const toast = document.getElementById('toastBox');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
+
+        // ==================== SCREEN 1: VIDEOS RENDER & INTERACTION ====================
+        function renderVideos() {
+            const container = document.getElementById('videoFeed');
+            container.innerHTML = videosData.map((v, index) => `
+                <div class="video-slide bg-gradient-to-b ${v.bgGradient} flex flex-col justify-between p-5 relative">
+                    <!-- Simulated Video Center Visual -->
+                    <div class="my-auto flex flex-col items-center justify-center text-center px-6">
+                        <div class="w-28 h-28 rounded-full bg-amber-400/15 border-2 border-amber-400/50 flex items-center justify-center mb-4 relative">
+                            <i class="fa-solid ${v.icon} text-5xl text-amber-300"></i>
+                            <div class="absolute -bottom-2 bg-amber-400 text-blue-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                                VIDEO ${index + 1}/${videosData.length}
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-200/80 bg-black/30 px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-play mr-1"></i> လက်တွေ့စမ်းသပ်ပြသမှု ဗီဒီယိုနမူနာ
+                        </p>
+                    </div>
+
+                    <!-- Right Side TikTok Action Icons -->
+                    <div class="absolute right-3 bottom-28 flex flex-col items-center gap-4 z-10">
+                        <button onclick="toggleLike(this)" class="flex flex-col items-center gap-1 group">
+                            <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-lg transition">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                            <span class="text-[11px] font-bold">${v.likes}</span>
+                        </button>
+                        <button onclick="switchScreen('chat')" class="flex flex-col items-center gap-1">
+                            <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
+                            <span class="text-[11px] font-bold">${v.comments}</span>
+                        </button>
+                        <button onclick="showToast('ဗီဒီယိုလင့်ခ်ကို ကူးယူပြီးပါပြီ!')" class="flex flex-col items-center gap-1">
+                            <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-share"></i>
+                            </div>
+                            <span class="text-[11px] font-bold">မျှဝေရန်</span>
+                        </button>
+                    </div>
+
+                    <!-- Bottom Video Info & Direct Order CTA -->
+                    <div class="pr-14 z-10 space-y-2.5">
+                        <span class="text-[11px] font-bold text-amber-300">${v.tag}</span>
+                        <h3 class="text-sm font-extrabold text-white leading-snug">${v.title}</h3>
+                        <p class="text-xs text-blue-100/90 leading-relaxed">${v.desc}</p>
+                        
+                        <!-- Gold Order Button inside Video -->
+                        <button onclick="attachProductAndOrder('${v.linkedProduct.name}', '${v.linkedProduct.price}')" 
+                            class="w-full py-2.5 px-3.5 rounded-2xl yellow-gold-card text-amber-950 font-extrabold text-xs flex items-center justify-between">
+                            <span class="truncate pr-2">
+                                <i class="fa-solid fa-cart-shopping text-amber-700 mr-1.5"></i>
+                                ${v.linkedProduct.name}
+                            </span>
+                            <span class="bg-amber-800 text-amber-100 px-2.5 py-1 rounded-xl shrink-0 text-[11px]">
+                                Order တင်မည်
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('text-red-500')) {
+                icon.classList.remove('text-red-500');
+                icon.classList.add('text-white');
+            } else {
+                icon.classList.remove('text-white');
+                icon.classList.add('text-red-500');
+                showToast('ဗီဒီယိုကို နှစ်သက်ကြောင်း မှတ်သားပြီးပါပြီ ❤️');
+            }
+        }
+
+        // ==================== SCREEN 2: PRODUCTS CATALOG ====================
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-blue-200 text-xs">ရှာဖွေသော ပစ္စည်း မတွေ့ရှိပါခင်ဗျာ။</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(p => `
+                <div class="yellow-gold-card rounded-2xl p-3 flex flex-col justify-between text-amber-950">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock === 'လက်ကျန်ရှိ' ? 'bg-green-700 text-white' : 'bg-amber-700 text-white'}">
+                                ${p.stock}
+                            </span>
+                            <div class="w-8 h-8 rounded-xl gold-badge-icon flex items-center justify-center text-white text-xs">
+                                <i class="fa-solid ${p.icon}"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xs font-extrabold leading-snug text-amber-950">${p.name}</h3>
+                        <p class="text-[10px] font-medium text-amber-800 mt-1">${p.specs}</p>
+                    </div>
+
+                    <div class="mt-3 pt-2 border-t border-amber-600/30">
+                        <p class="text-sm font-extrabold text-amber-900 mb-2">${p.price}</p>
+                        <button onclick="attachProductAndOrder('${p.name}', '${p.price}')" 
+                            class="w-full py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-amber-300 font-bold text-[11px] flex items-center justify-center gap-1.5 shadow">
+                            <i class="fa-solid fa-camera"></i> Screenshot Order
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setCategory(cat, btnEl) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(b => {
+                b.classList.remove('bg-amber-400', 'text-blue-950', 'font-bold', 'shadow');
+                b.classList.add('bg-blue-900/80', 'text-blue-100', 'font-semibold');
+            });
+            btnEl.classList.remove('bg-blue-900/80', 'text-blue-100', 'font-semibold');
+            btnEl.classList.add('bg-amber-400', 'text-blue-950', 'font-bold', 'shadow');
+            filterProducts();
+        }
+
+        function filterProducts() {
+            const keyword = document.getElementById('productSearchInput').value.toLowerCase().trim();
+            const filtered = productsData.filter(p => {
+                const matchCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchText = p.name.toLowerCase().includes(keyword) || p.specs.toLowerCase().includes(keyword);
+                return matchCat && matchText;
+            });
+            renderProducts(filtered);
+        }
+
+        // ==================== SCREEN 3: SCREENSHOT ORDER & CHAT ====================
+        function attachProductAndOrder(name, price) {
+            pendingAttachment = {
+                type: 'product_screenshot',
+                title: `${name} (${price})`,
+                imageUrl: null
+            };
+            updateAttachmentPreview();
+            switchScreen('chat');
+            showToast('ပစ္စည်း Screenshot ပုံကို Chat ထဲသို့ ထည့်သွင်းပြီးပါပြီ!');
+        }
+
+        function triggerDeviceScreenshot() {
+            document.getElementById('screenshotFileInput').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pendingAttachment = {
+                    type: 'uploaded_image',
+                    title: file.name || 'Screenshot ပုံ',
+                    imageUrl: e.target.result
+                };
+                updateAttachmentPreview();
+                showToast('Screenshot ပုံ ရွေးချယ်ပြီးပါပြီ။ စာပို့ရန် ခလုတ်နှိပ်ပါ။');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateAttachmentPreview() {
+            const bar = document.getElementById('attachmentPreviewBar');
+            const thumb = document.getElementById('previewThumb');
+            const titleEl = document.getElementById('previewItemTitle');
+
+            if (!pendingAttachment) {
+                bar.classList.add('hidden');
+                return;
+            }
+
+            bar.classList.remove('hidden');
+            titleEl.innerText = pendingAttachment.title;
+
+            if (pendingAttachment.imageUrl) {
+                thumb.innerHTML = `<img src="${pendingAttachment.imageUrl}" class="w-full h-full object-cover" alt="Screenshot">`;
+            } else {
+                thumb.innerHTML = `<i class="fa-solid fa-bolt text-amber-300"></i>`;
+            }
+        }
+
+        function clearAttachment() {
+            pendingAttachment = null;
+            document.getElementById('screenshotFileInput').value = '';
+            updateAttachmentPreview();
+        }
+
+        function sendQuickPrompt(text) {
+            document.getElementById('chatInput').value = text;
+            sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+
+            if (!text && !pendingAttachment) {
+                showToast('စာရိုက်ပါ သို့မဟုတ် Screenshot ပုံ ရွေးချယ်ပါခင်ဗျာ။');
+                return;
+            }
+
+            const chatBox = document.getElementById('chatMessages');
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            // Build Attachment HTML inside Bubble
+            let attachHTML = '';
+            if (pendingAttachment) {
+                if (pendingAttachment.imageUrl) {
+                    attachHTML = `
+                        <div class="mb-2 rounded-xl overflow-hidden border border-amber-700 bg-amber-100">
+                            <img src="${pendingAttachment.imageUrl}" class="max-h-40 w-full object-cover" alt="Order Screenshot">
+                            <div class="px-2.5 py-1 text-[10px] font-bold text-amber-950 bg-amber-300">
+                                📸 Screenshot Order ပုံ
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    attachHTML = `
+                        <div class="mb-2 p-2.5 rounded-xl bg-amber-300 text-amber-950 border border-amber-700">
+                            <span class="text-[10px] font-extrabold uppercase block text-amber-800">📸 Product Screenshot</span>
+                            <p class="text-xs font-extrabold mt-0.5">${pendingAttachment.title}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            const msgText = text || 'ဒီပစ္စည်းလေး အော်ဒါတင်ချင်ပါတယ်ခင်ဗျာ။';
+
+            // Append Buyer Message
+            const buyerBubble = document.createElement('div');
+            buyerBubble.className = 'flex justify-end';
+            buyerBubble.innerHTML = `
+                <div class="max-w-[82%] bg-amber-200 text-amber-950 border-2 border-amber-500 rounded-2xl rounded-tr-none p-3 text-xs shadow-md">
+                    ${attachHTML}
+                    <p class="font-semibold leading-relaxed">${msgText}</p>
+                    <span class="text-[10px] text-amber-800 block text-right mt-1">${timeStr} • ပို့ပြီး</span>
+                </div>
+            `;
+            chatBox.appendChild(buyerBubble);
+
+            // Reset input & attachment
+            input.value = '';
+            const hadAttachment = !!pendingAttachment;
+            clearAttachment();
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Simulated Instant Reply from Shop Owner
+            setTimeout(() => {
+                const replyBubble = document.createElement('div');
+                replyBubble.className = 'flex items-start gap-2 max-w-[85%]';
+                const replyMsg = hadAttachment 
+                    ? 'ဟုတ်ကဲ့ခင်ဗျာ အလင်းသစ်ဆိုင်မှ ပို့ပေးတဲ့ Screenshot ပုံကို လက်ခံရရှိပါပြီ 🙏 ပစ္စည်းအသင့်ရှိပါတယ်။ လိပ်စာနဲ့ ဖုန်းနံပါတ်လေး ပို့ပေးပါဦးခင်ဗျာ။'
+                    : 'ဟုတ်ကဲ့ခင်ဗျာ မင်္ဂလာပါ 🙏 အလင်းသစ်ဆိုင်မှ တာဝန်ရှိသူက ချက်ချင်း စစ်ဆေးပြီး ပြန်လည်ဖြေကြားပေးနေပါပြီခင်ဗျာ။';
+
+                replyBubble.innerHTML = `
+                    <div class="w-8 h-8 rounded-full gold-badge-icon flex items-center justify-center text-white text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="bg-blue-900/90 border border-amber-400/40 rounded-2xl rounded-tl-none p-3 text-xs text-blue-50 shadow">
+                        <p class="font-bold text-amber-300 mb-1">အလင်းသစ် (ဇရပ်ကြီး)</p>
+                        <p class="leading-relaxed">${replyMsg}</p>
+                        <span class="text-[10px] text-blue-300 block mt-1">${timeStr}</span>
+                    </div>
+                `;
+                chatBox.appendChild(replyBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 900);
+        }
+
+        // ==================== SCREEN 4: SHOP INFO HELPERS ====================
+        function copyAccount(accNum, provider) {
+            const tempInput = document.createElement('input');
+            tempInput.value = accNum;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`${provider} နံပါတ် (${accNum}) ကို ကူးယူပြီးပါပြီ!`);
+        }
+
+        function checkOrderStatus() {
+            const val = document.getElementById('orderTrackInput').value.trim();
+            const resBox = document.getElementById('orderTrackResult');
+            if (!val) {
+                showToast('ဖုန်းနံပါတ် သို့မဟုတ် Order ID ရိုက်ထည့်ပါခင်ဗျာ။');
+                return;
+            }
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-green-700 text-base"></i>
+                    <div>
+                        <p class="font-extrabold">အော်ဒါအမှတ် (${val}) - ပစ္စည်းထုပ်ပိုးပြီးပါပြီ</p>
+                        <p class="text-[11px] text-amber-900 mt-0.5">ယနေ့ ညနေပိုင်းတွင် ပို့ဆောင်ရေးဖြင့် ပို့ပေးပါမည်ခင်ဗျာ။</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
